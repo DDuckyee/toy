@@ -20,14 +20,12 @@ function Header(props) {
 }
 
 function Nav(props) {
-  const lis = [];
-  for (let i = 0; i < props.topics.length; i++) {
-    let t = props.topics[i];
-    lis.push(
-      <li key={t.id}>
+  const lis = props.topics.map(function (element) {
+    return (
+      <li key={element.id}>
         <a
-          id={t.id}
-          href={"/read/" + t.id}
+          id={element.id}
+          href={"/read/" + element.id}
           onClick={(event) => {
             event.preventDefault();
             props.onChangeMode(Number(event.target.id));
@@ -124,9 +122,6 @@ function Update(props) {
 }
 
 function App() {
-  // const _mode = useState('WELCOME');
-  // const mode = _mode[0];
-  // const setMode = _mode[1];
   const [mode, setMode] = useState("WELCOME");
   const [id, setId] = useState("null");
   const [nextId, setNextId] = useState(4);
@@ -141,14 +136,8 @@ function App() {
   if (mode === "WELCOME") {
     content = <Article title="Welcome" body="Hello, WEB"></Article>;
   } else if (mode === "READ") {
-    let title,
-      body = null;
-    for (let i = 0; i < topics.length; i++) {
-      if (topics[i].id === id) {
-        title = topics[i].title;
-        body = topics[i].body;
-      }
-    }
+    let title = topics.filter((t) => t.id === id)[0].title,
+      body = topics.filter((t) => t.id === id)[0].body;
     content = <Article title={title} body={body}></Article>;
     contextControl = (
       <>
@@ -168,13 +157,7 @@ function App() {
             type="button"
             value="Delete"
             onClick={() => {
-              const newTopics = [];
-              for (let i = 0; i < topics.length; i++) {
-                if (topics[i].id !== id) {
-                  newTopics.push(topics[i]);
-                }
-              }
-              setTopics(newTopics);
+              setTopics(topics.filter((t) => t.id !== id));
               setMode("WELCOME");
             }}
           />
@@ -185,25 +168,16 @@ function App() {
     content = (
       <Create
         onCreate={(_title, _body) => {
-          const newTopic = { id: nextId, title: _title, body: _body };
-          const newTopics = [...topics];
-          newTopics.push(newTopic);
-          setTopics(newTopics);
+          setTopics([...topics, { id: nextId, title: _title, body: _body }]);
           setId(nextId);
-          setNextId(nextId + 1);
+          setNextId((nextId) => nextId + 1);
           setMode("READ");
         }}
       ></Create>
     );
   } else if (mode === "UPDATE") {
-    let title,
-      body = null;
-    for (let i = 0; i < topics.length; i++) {
-      if (topics[i].id === id) {
-        title = topics[i].title;
-        body = topics[i].body;
-      }
-    }
+    let title = topics.filter((t) => t.id === id)[0].title,
+      body = topics.filter((t) => t.id === id)[0].body;
     content = (
       <Update
         title={title}
