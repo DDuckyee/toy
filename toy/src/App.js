@@ -31,11 +31,11 @@ function Nav(props) {
             props.onChangeMode(Number(event.target.id));
           }}
         >
-          {element.title}
+          {t.title}
         </a>
       </li>
     );
-  });
+  }
   return (
     <nav>
       <ol>{lis}</ol>
